@@ -1,0 +1,80 @@
+#How to Install NextCloud on Ubuntu:
+
+sudo apt update
+
+apt install lsb-release ca-certificates apt-transport-https software-properties-common -y
+
+add-apt-repository ppa:ondrej/php
+
+apt install php8.0
+
+apt install php8.0-{bcmath,xml,fpm,mysql,zip,intl,ldap,gd,cli,bz2,curl,mbstring,pgsql,opcache,soap,cgi}
+
+a2enmod php8.0
+
+apt install apache2 libapache2-mod-php8.0 -y
+
+apt install mariadb-server -y
+
+#Secure MariaDB database server:
+
+sudo mysql_secure_installation
+
+#Create a new database and user
+
+sudo mysql -u root
+MariaDB [(none)]> CREATE DATABASE nextcloud;
+MariaDB [(none)]> CREATE USER 'nextcloud'@'localhost' IDENTIFIED BY 'ubuntu';
+MariaDB [(none)]> GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'localhost';
+MariaDB [(none)]> FLUSH PRIVILEGES;
+MariaDB [(none)]> exit;
+
+
+cd /var/www/html
+
+sudo wget https://download.nextcloud.com/server/releases/latest.zip
+
+unzip latest.zip
+
+
+chown -R www-data:www-data /var/www/html/nextcloud
+
+nano /etc/apache2/sites-available/nextcloud.conf
+
+<VirtualHost *:80>
+     ServerAdmin admin@iotlogy.xyz
+     DocumentRoot /var/www/html/nextcloud
+     ServerName iotlogy.xyz
+     ServerAlias www.iotlogy.xyz
+     ErrorLog /var/log/apache2/nextcloud-error.log
+     CustomLog /var/log/apache2/nextcloud-access.log combined
+ 
+    <Directory /var/www/html/nextcloud/>
+	Options +FollowSymlinks
+	AllowOverride All
+        Require all granted
+ 	SetEnv HOME /var/www/html/nextcloud
+ 	SetEnv HTTP_HOME /var/www/html/nextcloud
+ 	<IfModule mod_dav.c>
+  	  Dav off
+        </IfModule>
+    </Directory>
+</VirtualHost>
+
+a2enmod rewrite dir mime env headers
+
+a2ensite nextcloud.conf
+
+apachectl -t
+
+systemctl restart apache2
+
+#Now, Open a web browser, and type "server ip or if set domain" then go to the url:
+
+ > Enter a username and a strong password to create an admin account.
+ > After that, specify “dbusername”, “password”, “dbname”, and “hostname” one-by-one. Then, hit the    “Install” button.
+ > Click on “Install recommended apps” to continue the installation process.
+
+ > Finally, NextCloud has been installed successfully.
+
+

@@ -1,0 +1,27 @@
+How to install ssl for nextcloud on ubuntu:
+
+apt-get install python3-certbot-apache -y
+
+certbot --apache -d drive.iotlogy.xyz
+
+Enter email address: sumonpaul267@gmail.com
+
+(A)gree/(C)ancel: A
+
+(Y)es/(N)o: Y
+
+Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2
+
+Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2
+
+a2enmod http2
+
+systemctl restart apache2
+
+nano /var/www/html/nextcloud/config/config.php
+
+#add a line under trusted_domain
+1=> drive.iotlogy.xyz
+
+systemctl restart apache2
+
